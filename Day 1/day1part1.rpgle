@@ -2,8 +2,8 @@
 
 CTL-OPT MAIN(Main) DFTACTGRP(*NO) ACTGRP(*NEW);
 
-/INCLUDE './AdventOfCode2025/ifs_io.rpgle'
-/INCLUDE './AdventOfCode2025/my_stuff.rpgle'
+/INCLUDE './builds/AdventOfCode2025/ifs_io.rpgle'
+/INCLUDE './builds/AdventOfCode2025/my_stuff.rpgle'
 
 DCL-PR Main EXTPGM('DAY1PART1');
     pfilename CHAR(32);
