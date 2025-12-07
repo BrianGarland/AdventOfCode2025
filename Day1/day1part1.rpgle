@@ -12,7 +12,6 @@ END-PR;
 
 
 
-
 DCL-PROC Main;
     DCL-PI *N;
         pfilename CHAR(32);

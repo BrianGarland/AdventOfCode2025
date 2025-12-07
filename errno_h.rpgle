@@ -268,7 +268,7 @@ DCL-C EJRNENTTOOLONG 3533;
 DCL-C EDATALINK  3534;
                                                                              
 // The following values are defined by POSIX ISO/IEC 9945-1:1990
-//  (these were also taken from QCLE/H member ERRNO)
+// (these were also taken from QCLE/H member ERRNO)
                                                                   
 // invalid argument
 DCL-C EINVAL     3021;
@@ -288,26 +288,18 @@ DCL-C EPERM      3027;
 //-------------------------------------------------------------------
 // prototype definitions
 //-------------------------------------------------------------------
-DCL-PR sys_errno POINTER EXTPROC('__ERRNO');
+DCL-PR sys_errno POINTER EXTPROC('__errno');
 END-PR;
                                                                                      
-DCL-PR strerror POINTER EXTPROC('STRERROR');
+DCL-PR strerror POINTER EXTPROC('strerror');
     errnum INT(10) VALUE;
 END-PR;
                                                                                      
-DCL-PR perror EXTPROC('PERROR');
+DCL-PR perror EXTPROC('perror');
     comment POINTER VALUE OPTIONS(*STRING);
 END-PR;
                                                                                      
 DCL-PR errno INT(10);
-END-PR;
-
-DCL-PR die IND;
-    msg CHAR(256) CONST;
-END-PR;
-                                                                                 
-DCL-PR escerrno IND;
-    errnum INT(10) VALUE;
 END-PR;
 
 /ENDIF
@@ -326,93 +318,11 @@ DCL-PROC errno;
     DCL-S p_errno  POINTER;
     DCL-S wwreturn INT(10) BASED(P_ERRNO);
 
-    p_errno = sys_errno;
+    p_errno = sys_errno();
 
     RETURN WWRETURN;
 
 END-PROC;
                                                                        
-// end program with a (user-defined) escape message
-DCL-PROC die;
-    DCL-PI *N IND;
-        msg CHAR(256) CONST;
-    END-PI;
-                                                                     
-    DCL-PR QMHSNDPM EXTPGM('QMHSNDPM');
-        MessageID  CHAR(7) CONST;
-        QualMsgF   CHAR(20) CONST;
-        MsgData    CHAR(256) CONST;
-        MsgDtaLen  INT(10) CONST;
-        MsgType    CHAR(10) CONST;
-        CallStkEnt CHAR(10) CONST;
-        CallStkCnt INT(10) CONST;
-        MessageKey CHAR(4);
-        ErrorCode  CHAR(1);
-    END-PR;
-                                                                     
-    DCL-DS DSEC;
-        dsECBytesP INT(10) POS(1) INZ(%SIZE(DSEC));
-        dsECBytesA INT(10) POS(5) INZ(0);
-        dsECMsgID  CHAR(7) POS(9);
-        dsECReserv CHAR(1) POS(16);
-        dsECMsgDta CHAR(240) POS(17);
-    END-DS;    
-                                                                               
-    DCL-S MsgLen INT(10);
-    DCL-S TheKey CHAR(4);
-
-
-    MSGLEN = %CHECKR(' ':MSG);
-    IF MsgLen<1;
-        RETURN *OFF;
-    ENDIF;
-                                                                               
-    QMHSNDPM('CPF9897':'QCPFMSG   *LIBL':Msg:MsgLen:'*ESCAPE':'*':3:TheKey:dsEC);
-                                                                               
-    RETURN *OFF;
-
-END-PROC;
-                                                                               
-                                                                               
-// End program with an escape message that corresponds to
-// the value of "errno" above.
-DCL-PROC EscErrno;
-    DCL-PI EscErrno IND;
-        errnum INT(10) VALUE;
-    END-PI;
-                                                                                     
-    DCL-PR QMHSNDPM EXTPGM('QMHSNDPM');
-        MessageID  CHAR(7) CONST;
-        QualMsgF   CHAR(20) CONST;
-        MsgData    CHAR(256) CONST;
-        MsgDtaLen  INT(10) CONST;
-        MsgType    CHAR(10) CONST;
-        CallStkEnt CHAR(10) CONST;
-        CallStkCnt INT(10) CONST;
-        MessageKey CHAR(4);
-        ErrorCode  CHAR(1);
-    END-PR;
-                                                                     
-    DCL-DS DSEC;
-        dsECBytesP INT(10) POS(1) INZ(%SIZE(DSEC));
-        dsECBytesA INT(10) POS(5) INZ(0);
-        dsECMsgID  CHAR(7) POS(9);
-        dsECReserv CHAR(1) POS(16);
-        dsECMsgDta CHAR(240) POS(17);
-    END-DS;    
-                                                                                   
-    DCL-S MsgID  CHAR(7);
-    DCL-S TheKey CHAR(4);
-
-
-    EVALR MsgID = %EDITC(Errnum:'X');                                                                                       
-    %SUBST(MsgID:1:3) = 'CPE';
-                                                                                   
-    QMHSNDPM(MsgID:'QCPFMSG   *LIBL':' ':0:'*ESCAPE':'*':3:TheKey:dsEC);
-                                                                                   
-    RETURN *OFF;
-
-END-PROC;
-
 /ENDIF
                                                                                    

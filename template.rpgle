@@ -1,14 +1,14 @@
 **FREE
 
-CTL-OPT MAIN(Main) DFTACTGRP(*NO) ACTGRP(*NEW);
+CTL-OPT MAIN(Main) BNDDIR('QC2LE') DFTACTGRP(*NO) ACTGRP(*NEW);
 
-/INCLUDE './AdventOfCode2025/ifs_io.rpgle'
-/INCLUDE './AdventOfCode2025/my_stuff.rpgle'
+/INCLUDE 'ifs_io.rpgle'
+/INCLUDE 'my_stuff.rpgle'
+/INCLUDE 'errno_h.rpgle'
 
 DCL-PR Main EXTPGM('DAY1PART1');
     pfilename CHAR(32);
 END-PR;
-
 
 
 
@@ -21,6 +21,7 @@ DCL-PROC Main;
     DCL-S buffer        CHAR(150);
     DCL-S bufferlen     INT(10);
     DCL-S filename      VARCHAR(100);
+    DCL-S message       CHAR(50);
     DCL-S options       VARCHAR(100);
     DCL-S stream        LIKE(pfile);
     DCL-S success       POINTER;
@@ -30,6 +31,12 @@ DCL-PROC Main;
     filename = './builds/AdventOfCode2025/day1/' + %TRIM(pfilename);
     options = 'r, crln=N';
     stream = fopen(filename:options);
+    IF stream = *NULL;
+        message = 'ERRNO: ' + %CHAR(errno()) 
+                + ' File: ' + filename;
+        DSPLY message;
+        RETURN;
+    ENDIF;
     CLEAR buffer;
     success = fgets(%ADDR(buffer):%SIZE(buffer):stream);
     DOW success <> *NULL;
@@ -44,7 +51,7 @@ DCL-PROC Main;
 
 
 
-
+ 
         CLEAR buffer;
         success = fgets(%ADDR(buffer):%SIZE(buffer):stream);
     ENDDO;
@@ -60,3 +67,6 @@ DCL-PROC Main;
     RETURN;
 
 END-PROC;
+
+/DEFINE ERRNO_LOAD_PROCEDURE
+/INCLUDE 'errno_h.rpgle'
