@@ -25,10 +25,6 @@ DCL-PROC Main;
     DCL-S stream        LIKE(pfile);
     DCL-S success       POINTER;
 
-    DCL-S dialposition  UNS(5);
-    DCL-S moves         INT(5) DIM(50000);
-
-
 
     // Read the input
     filename = './builds/AdventOfCode2025/day1/' + %TRIM(pfilename);
