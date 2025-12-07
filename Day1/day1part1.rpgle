@@ -31,7 +31,7 @@ DCL-PROC Main;
 
 
     // Read the input
-    filename = 'builds/AdventOfCode2025/Day1/' + %TRIM(pfilename);
+    filename = './builds/AdventOfCode2025/Day1/' + %TRIM(pfilename);
     options = 'r, crln=N';
     stream = fopen(filename:options);
     CLEAR buffer;
