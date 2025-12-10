@@ -26,9 +26,12 @@ DCL-PROC Main;
     DCL-S stream        LIKE(pfile);
     DCL-S success       POINTER;
 
-    DCL-S dialposition  UNS(5);
-
-    DCL-S moves         INT(5) DIM(50000);
+    DCL-S dialposition  INT(5) INZ(50);
+    DCL-S direction     CHAR(1);    
+    DCL-S distance      INT(10);
+    DCL-S maxdialpos    UNS(5) INZ(99);
+    DCL-S mindialpos    UNS(5) INZ(0);
+    DCL-S numpositions  UNS(5) INZ(100);
 
 
 
@@ -53,9 +56,30 @@ DCL-PROC Main;
             bufferlen -= 1;
         ENDDO;
 
+        direction = %SUBST(buffer:1:1);
+        distance = %INT(%SUBST(buffer:2:bufferlen-1));
 
+        IF direction = 'R';
+            dialposition += distance;
+            DOW dialposition > maxdialpos;
+                dialposition -= numpositions;
+            ENDDO;
+        ELSEIF direction = 'L';
+            dialposition -= distance;
+            DOW dialposition < mindialpos;
+                dialposition += numpositions;
+            ENDDO;
+        ENDIF;
 
+        IF dialposition = 0;
+            answer += 1;
+        ENDIF;
 
+        message = 'Direction: ' + direction
+                + ' Distance: ' + %CHAR(distance)
+                + ' New Dial Position: ' + %CHAR(dialposition);
+
+        DSPLY message;
 
         CLEAR buffer;
         success = fgets(%ADDR(buffer):%SIZE(buffer):stream);
