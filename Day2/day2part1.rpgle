@@ -6,7 +6,7 @@ CTL-OPT MAIN(Main) BNDDIR('QC2LE') DFTACTGRP(*NO) ACTGRP(*NEW);
 /INCLUDE 'my_stuff.rpgle'
 /INCLUDE 'errno_h.rpgle'
 
-DCL-PR Main EXTPGM('DAY1PART1');
+DCL-PR Main EXTPGM('DAY2PART1');
     pfilename CHAR(32);
 END-PR;
 
@@ -28,7 +28,7 @@ DCL-PROC Main;
 
 
     // Read the input
-    filename = './builds/AdventOfCode2025/day1/' + %TRIM(pfilename);
+    filename = './builds/AdventOfCode2025/day2/' + %TRIM(pfilename);
     options = 'r, crln=N';
     stream = fopen(filename:options);
     IF stream = *NULL;
